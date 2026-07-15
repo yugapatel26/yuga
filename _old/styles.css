@@ -1,0 +1,341 @@
+/* ===========================================================
+   Yuga Patel — personal site
+   Minimal, monochrome, tab-switching "dashboard" (hash-routed).
+   One view visible at a time. Inspired by rishabjaink.com &
+   lucyc.ai. Re-theme via the variables below.
+   =========================================================== */
+
+:root {
+  /* Monochrome by default. To add color, set --accent to e.g. #c2410c */
+  --ink: #141414;
+  --ink-soft: #6b7280;
+  --bg: #fafafa;
+  --bg-soft: #f4f5f6;
+  --line: #e5e7eb;
+  --accent: var(--ink);
+  --hover-fill: rgba(0, 0, 0, 0.045);
+
+  --measure: 680px;
+  --nav-h: 56px;
+
+  /* One font everywhere — Playfair Display (Soria lookalike) */
+  --font: "Playfair Display", Georgia, "Times New Roman", Times, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e8e8ea;
+    --ink-soft: #9aa1ac;
+    --bg: #0e0f11;
+    --bg-soft: #17181b;
+    --line: #2a2d33;
+    --accent: var(--ink);
+    --hover-fill: rgba(255, 255, 255, 0.06);
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.7;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 1.5rem);
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* Inline prose links: underlined, subtle, darken on hover */
+.view p a,
+.row__title a,
+.feature__title a,
+.status a,
+.contact__links a {
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease, color 0.15s ease;
+}
+.view p a:hover,
+.row__title a:hover,
+.feature__title a:hover,
+.status a:hover,
+.contact__links a:hover { text-decoration-color: currentColor; }
+
+.muted { color: var(--ink-soft); }
+
+/* ============ STICKY NAV ============ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: var(--nav-h);
+  flex-wrap: wrap;
+}
+.nav__brand {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.nav__brand:hover { color: var(--accent); }
+
+.nav__tabs { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+.nav__tabs a {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 7px;
+  color: var(--ink);
+  opacity: 0.5;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.nav__tabs a:hover { opacity: 1; background: var(--hover-fill); }
+.nav__tabs a.is-active { opacity: 1; background: var(--hover-fill); font-weight: 500; }
+
+/* ============ VIEWS (one at a time) ============ */
+main { padding-top: clamp(2.25rem, 6vw, 3.25rem); padding-bottom: 4rem; }
+
+/* Each view is centered at reading width; the About "hero" goes wide. */
+.view {
+  width: 100%;
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 1.5rem);
+}
+
+/* With JS on, show only the active view; with JS off, all views stack (full content). */
+.js .view { display: none; }
+.js .view.is-visible { display: block; animation: viewIn 0.28s ease both; }
+
+@keyframes viewIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Focus target headings: no outline on programmatic focus, ring only for keyboard */
+.view [tabindex="-1"] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
+.view [tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+
+.view p { margin-bottom: 1rem; }
+.view p:last-child { margin-bottom: 0; }
+
+.view__title {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 5vw, 2.2rem);
+  margin-bottom: 1.5rem;
+}
+
+/* ============ ABOUT (two-column hero, à la lucyc.ai) ============ */
+.about { max-width: 860px; }
+.about__grid {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  align-items: start;
+}
+.about__text > p { margin-bottom: 1rem; }
+.about__text .name {
+  font-size: clamp(1.8rem, 4vw, 2.3rem);
+  margin-bottom: 0.35rem;
+}
+.about__text .status { margin-bottom: 1.25rem; }
+.name {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: clamp(2rem, 7vw, 2.9rem);
+  line-height: 1.05;
+}
+.status { color: var(--ink-soft); font-weight: 500; margin-top: 0.35rem; }
+.status a { color: var(--ink); font-weight: 600; }
+
+.avatar {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  border-radius: 4px;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+/* ============ DISCLOSURE (read more) ============ */
+.disclosure {
+  margin-top: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  background: none;
+  border: 0;
+  padding: 0.3rem 0.5rem;
+  margin-left: -0.5rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.disclosure:hover { background: var(--hover-fill); color: var(--ink); }
+.disclosure__caret { transition: transform 0.2s ease; display: inline-block; }
+.disclosure[aria-expanded="true"] .disclosure__caret { transform: rotate(90deg); }
+.disclosure__panel { margin-top: 1rem; animation: viewIn 0.28s ease both; }
+
+/* ============ ROWS (experience / projects list) ============ */
+.rows { list-style: none; display: flex; flex-direction: column; }
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+.row:first-child { border-top: 0; }
+.row__main { flex: 1; min-width: 0; }
+.row__title { font-weight: 600; }
+.row__desc { color: var(--ink-soft); margin: 0.2rem 0 0; font-size: 0.97rem; }
+.row__meta {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.subhead {
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: 2rem 0 0.5rem;
+}
+
+.pdf { margin-top: 1.75rem; }
+.pdf a {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  border: 1px solid var(--line);
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  display: inline-block;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.pdf a:hover { background: var(--hover-fill); border-color: var(--ink-soft); }
+
+/* ============ PROJECTS FEATURED CARD ============ */
+.feature { margin-bottom: 0.5rem; }
+.feature__shot {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+.feature__shot:hover { transform: scale(1.03); box-shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.35); }
+.feature__body { margin-top: 1rem; }
+.row__head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.feature__title { font-family: var(--font); font-weight: 600; font-size: 1.25rem; }
+.feature__body p { color: var(--ink-soft); margin: 0.4rem 0 0.75rem; }
+
+.tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tags span {
+  font-family: var(--font);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+
+/* ============ CONTACT ============ */
+.contact__lead { color: var(--ink-soft); }
+.reveal {
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--line);
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  color: var(--ink);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.reveal:hover { background: var(--hover-fill); border-color: var(--ink-soft); }
+.email-link { font-family: var(--font); text-decoration: underline; text-underline-offset: 3px; }
+.contact__links { margin-top: 1.5rem; color: var(--ink-soft); }
+
+/* ============ PLACEHOLDERS (swap for real images) ============ */
+.placeholder {
+  display: grid;
+  place-items: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: var(--font);
+  font-size: 0.72rem;
+}
+
+/* ============ FOOTER (persists across views) ============ */
+.footer { border-top: 1px solid var(--line); padding: 1.5rem 0; margin-top: 2rem; }
+.footer__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+.footer__socials { display: flex; gap: 1rem; }
+.footer__socials a { transition: color 0.15s ease; }
+.footer__socials a:hover { color: var(--ink); }
+
+/* ============ FOCUS RINGS (keyboard only) ============ */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 720px) {
+  .about__grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .about .avatar { max-width: 340px; }
+}
+
+@media (max-width: 520px) {
+  .row { flex-direction: column; gap: 0.25rem; }
+  .row__head { flex-direction: column; gap: 0.15rem; }
+}
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .view.is-visible,
+  .disclosure__panel { animation: none; }
+  .feature__shot { transition: none; }
+  .feature__shot:hover { transform: none; }
+}
