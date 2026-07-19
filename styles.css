@@ -59,6 +59,3 @@ li { margin: 4px 0; }
 .post h2 a:hover { text-decoration: underline; }
 .meta { font-size: 12px; color: rgba(0, 0, 0, 0.45); margin: 0 0 10px; }
 
-details { margin-top: 24px; }
-summary { font-weight: 500; color: #000; cursor: pointer; }
-details p { margin: 16px 0 0; }
